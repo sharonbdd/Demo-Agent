@@ -1,7 +1,9 @@
 node_modules/
 dist/
+build/
 *.tsbuildinfo
 .env
 .env.*
 .openclaude-profile.json
 reports/
+__pycache__/

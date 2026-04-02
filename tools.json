@@ -1,0 +1,362 @@
+{
+  "source": {
+    "repo": "F:\\PyCharm\\openclaude",
+    "tool_registry_file": "src/tools.ts",
+    "tool_interface_file": "src/Tool.ts"
+  },
+  "notes": [
+    "This inventory reflects tools present in the repo, including feature-gated and environment-gated tools.",
+    "Some tools are only active when specific feature flags, env vars, or user types are enabled.",
+    "MCP tools are dynamic at runtime and are not exhaustively enumerable from the repo alone."
+  ],
+  "core_tools": [
+    {
+      "name": "AgentTool",
+      "category": "agents",
+      "description": "Spawn a sub-agent to handle a delegated task.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "AskUserQuestionTool",
+      "category": "interaction",
+      "description": "Ask the user a structured multiple-choice question.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "BashTool",
+      "category": "shell",
+      "description": "Run shell commands.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "PowerShellTool",
+      "category": "shell",
+      "description": "Run PowerShell commands.",
+      "gating": "enabled when PowerShell tool support is available"
+    },
+    {
+      "name": "FileReadTool",
+      "category": "files",
+      "description": "Read files, images, PDFs, and notebooks.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "FileEditTool",
+      "category": "files",
+      "description": "Edit existing files.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "FileWriteTool",
+      "category": "files",
+      "description": "Create or overwrite files.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "NotebookEditTool",
+      "category": "files",
+      "description": "Edit notebook content.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "GlobTool",
+      "category": "search",
+      "description": "Find files by glob or wildcard pattern.",
+      "gating": "present unless embedded search tools replace it"
+    },
+    {
+      "name": "GrepTool",
+      "category": "search",
+      "description": "Search file contents with regex.",
+      "gating": "present unless embedded search tools replace it"
+    },
+    {
+      "name": "WebFetchTool",
+      "category": "web",
+      "description": "Fetch and read a webpage.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "WebSearchTool",
+      "category": "web",
+      "description": "Search the web.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "TodoWriteTool",
+      "category": "planning",
+      "description": "Update the internal todo/task checklist.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "ToolSearchTool",
+      "category": "meta",
+      "description": "Search the available tool catalog when deferred tool loading is enabled.",
+      "gating": "enabled when tool search is optimistic/enabled"
+    },
+    {
+      "name": "SkillTool",
+      "category": "skills",
+      "description": "Invoke installed skills.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "TaskOutputTool",
+      "category": "tasks",
+      "description": "Emit or report task output.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "TaskStopTool",
+      "category": "tasks",
+      "description": "Stop a running task.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "EnterPlanModeTool",
+      "category": "planning",
+      "description": "Switch into plan mode.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "ExitPlanModeV2Tool",
+      "category": "planning",
+      "description": "Exit plan mode.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "BriefTool",
+      "category": "output",
+      "description": "Produce a brief or condensed response.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "SendMessageTool",
+      "category": "agents",
+      "description": "Send a message to another teammate or agent context.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "ListMcpResourcesTool",
+      "category": "mcp",
+      "description": "List resources exposed by connected MCP servers.",
+      "gating": "always in base registry"
+    },
+    {
+      "name": "ReadMcpResourceTool",
+      "category": "mcp",
+      "description": "Read a specific MCP resource.",
+      "gating": "always in base registry"
+    }
+  ],
+  "task_and_worktree_tools": [
+    {
+      "name": "TaskCreateTool",
+      "category": "tasks",
+      "description": "Create a structured task record.",
+      "gating": "enabled when Todo v2 is enabled"
+    },
+    {
+      "name": "TaskGetTool",
+      "category": "tasks",
+      "description": "Fetch a task by id.",
+      "gating": "enabled when Todo v2 is enabled"
+    },
+    {
+      "name": "TaskUpdateTool",
+      "category": "tasks",
+      "description": "Update a task.",
+      "gating": "enabled when Todo v2 is enabled"
+    },
+    {
+      "name": "TaskListTool",
+      "category": "tasks",
+      "description": "List tasks.",
+      "gating": "enabled when Todo v2 is enabled"
+    },
+    {
+      "name": "EnterWorktreeTool",
+      "category": "git",
+      "description": "Enter a git worktree context.",
+      "gating": "enabled when worktree mode is enabled"
+    },
+    {
+      "name": "ExitWorktreeTool",
+      "category": "git",
+      "description": "Leave a git worktree context.",
+      "gating": "enabled when worktree mode is enabled"
+    }
+  ],
+  "optional_or_feature_gated_tools": [
+    {
+      "name": "LSPTool",
+      "category": "analysis",
+      "description": "Use language-server-backed code intelligence.",
+      "gating": "enabled when ENABLE_LSP_TOOL is truthy"
+    },
+    {
+      "name": "ConfigTool",
+      "category": "config",
+      "description": "Read or change Claude/OpenClaude settings.",
+      "gating": "USER_TYPE=ant"
+    },
+    {
+      "name": "TungstenTool",
+      "category": "terminal",
+      "description": "Internal specialized terminal/runtime tool.",
+      "gating": "USER_TYPE=ant"
+    },
+    {
+      "name": "REPLTool",
+      "category": "execution",
+      "description": "Wrapped REPL execution environment.",
+      "gating": "USER_TYPE=ant"
+    },
+    {
+      "name": "WorkflowTool",
+      "category": "automation",
+      "description": "Run bundled workflow scripts.",
+      "gating": "WORKFLOW_SCRIPTS feature"
+    },
+    {
+      "name": "VerifyPlanExecutionTool",
+      "category": "planning",
+      "description": "Validate plan execution.",
+      "gating": "CLAUDE_CODE_VERIFY_PLAN=true"
+    },
+    {
+      "name": "SyntheticOutputTool",
+      "category": "output",
+      "description": "Return the final response as structured JSON.",
+      "gating": "available for structured-output flows"
+    },
+    {
+      "name": "SuggestBackgroundPRTool",
+      "category": "git",
+      "description": "Propose background PR work.",
+      "gating": "USER_TYPE=ant"
+    },
+    {
+      "name": "RemoteTriggerTool",
+      "category": "automation",
+      "description": "Trigger remote agent actions.",
+      "gating": "AGENT_TRIGGERS_REMOTE feature"
+    },
+    {
+      "name": "CronCreateTool",
+      "category": "automation",
+      "description": "Create scheduled prompts or tasks.",
+      "gating": "AGENT_TRIGGERS feature"
+    },
+    {
+      "name": "CronDeleteTool",
+      "category": "automation",
+      "description": "Delete scheduled prompts or tasks.",
+      "gating": "AGENT_TRIGGERS feature"
+    },
+    {
+      "name": "CronListTool",
+      "category": "automation",
+      "description": "List scheduled prompts or tasks.",
+      "gating": "AGENT_TRIGGERS feature"
+    },
+    {
+      "name": "TeamCreateTool",
+      "category": "agents",
+      "description": "Create an agent team or swarm.",
+      "gating": "enabled when agent swarms are enabled"
+    },
+    {
+      "name": "TeamDeleteTool",
+      "category": "agents",
+      "description": "Remove an agent team or swarm.",
+      "gating": "enabled when agent swarms are enabled"
+    },
+    {
+      "name": "TestingPermissionTool",
+      "category": "testing",
+      "description": "Test permission flows.",
+      "gating": "NODE_ENV=test"
+    },
+    {
+      "name": "SleepTool",
+      "category": "automation",
+      "description": "Pause or wait for scheduled continuation.",
+      "gating": "PROACTIVE or KAIROS feature"
+    },
+    {
+      "name": "WebBrowserTool",
+      "category": "browser",
+      "description": "Browser automation or browser session tool.",
+      "gating": "WEB_BROWSER_TOOL feature"
+    },
+    {
+      "name": "CtxInspectTool",
+      "category": "debugging",
+      "description": "Inspect context state.",
+      "gating": "CONTEXT_COLLAPSE feature"
+    },
+    {
+      "name": "TerminalCaptureTool",
+      "category": "debugging",
+      "description": "Capture terminal output.",
+      "gating": "TERMINAL_PANEL feature"
+    },
+    {
+      "name": "OverflowTestTool",
+      "category": "testing",
+      "description": "Internal overflow testing tool.",
+      "gating": "OVERFLOW_TEST_TOOL feature"
+    },
+    {
+      "name": "MonitorTool",
+      "category": "monitoring",
+      "description": "Monitor a running target, process, or workflow.",
+      "gating": "MONITOR_TOOL feature"
+    },
+    {
+      "name": "SendUserFileTool",
+      "category": "output",
+      "description": "Send or provide a file back to the user.",
+      "gating": "KAIROS feature"
+    },
+    {
+      "name": "PushNotificationTool",
+      "category": "notifications",
+      "description": "Send a push notification.",
+      "gating": "KAIROS or KAIROS_PUSH_NOTIFICATION feature"
+    },
+    {
+      "name": "SubscribePRTool",
+      "category": "git",
+      "description": "Subscribe to PR-related events.",
+      "gating": "KAIROS_GITHUB_WEBHOOKS feature"
+    },
+    {
+      "name": "ListPeersTool",
+      "category": "agents",
+      "description": "List peer agents or processes.",
+      "gating": "UDS_INBOX feature"
+    },
+    {
+      "name": "SnipTool",
+      "category": "history",
+      "description": "History or context snipping utility.",
+      "gating": "HISTORY_SNIP feature"
+    }
+  ],
+  "dynamic_tools": [
+    {
+      "name": "MCPTool",
+      "category": "mcp",
+      "description": "Generic wrapper for arbitrary MCP server tools.",
+      "gating": "runtime, depends on connected MCP servers"
+    },
+    {
+      "name": "McpAuthTool",
+      "category": "mcp",
+      "description": "MCP authentication helper.",
+      "gating": "runtime, depends on MCP auth flow"
+    }
+  ]
+}

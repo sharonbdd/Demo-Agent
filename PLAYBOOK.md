@@ -182,6 +182,18 @@ Fix:
 - For OpenAI: use a real key.
 - For Ollama: no key needed; keep localhost base URL.
 
+## 6.6 `OpenAI API error 404: No endpoints available matching your guardrail restrictions and data policy`
+
+Cause:
+
+- OpenRouter account privacy settings do not allow any currently available providers for the selected model.
+
+Fix:
+
+- Review `https://openrouter.ai/settings/privacy`.
+- For free OpenRouter models, relax the privacy/data-policy restrictions enough to allow an available provider, or choose a model/provider combination that matches your policy.
+- Retry with the same `OPENAI_BASE_URL=https://openrouter.ai/api/v1` and your selected `OPENAI_MODEL`.
+
 ## 7. Recommended Local Models
 
 - Fast/general: `llama3.1:8b`

@@ -2,7 +2,7 @@
 
 Use Claude Code with **any LLM** — not just Claude.
 
-OpenClaude is a fork of the [Claude Code source leak](https://gitlawb.com/node/repos/z6MkgKkb/instructkr-claude-code) (exposed via npm source maps on March 31, 2026). We added an OpenAI-compatible provider shim so you can plug in GPT-4o, DeepSeek, Gemini, Llama, Mistral, or any model that speaks the OpenAI chat completions API.
+OpenClaude is a fork of one of the SOTA agent. We added an OpenAI-compatible provider shim so you can plug in GPT-4o, DeepSeek, Gemini, Llama, Mistral, or any model that speaks the OpenAI chat completions API.
 
 All of Claude Code's tools work — bash, file read/write/edit, grep, glob, agents, tasks, MCP — just powered by whatever model you choose.
 
@@ -99,6 +99,8 @@ export OPENAI_API_KEY=sk-or-...
 export OPENAI_BASE_URL=https://openrouter.ai/api/v1
 export OPENAI_MODEL=google/gemini-2.0-flash
 ```
+
+If OpenRouter returns `No endpoints available matching your guardrail restrictions and data policy`, review your account privacy settings at `https://openrouter.ai/settings/privacy`. Free models often require less restrictive routing settings than paid provider tiers.
 
 ### Ollama (local, free)
 
