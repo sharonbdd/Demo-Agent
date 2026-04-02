@@ -1,46 +1,14 @@
 # OpenClaude
 
-Use Claude Code with **any LLM** — not just Claude.
+Use Agent with **any LLM**.
 
-OpenClaude is a fork of one of the SOTA agent. We added an OpenAI-compatible provider shim so you can plug in GPT-4o, DeepSeek, Gemini, Llama, Mistral, or any model that speaks the OpenAI chat completions API.
+OpenDemo is a fork of one of the SOTA agent. We added an OpenAI-compatible provider shim so you can plug in GPT-4o, DeepSeek, Gemini, Llama, Mistral, or any model that speaks the OpenAI chat completions API.
 
-All of Claude Code's tools work — bash, file read/write/edit, grep, glob, agents, tasks, MCP — just powered by whatever model you choose.
+All of AI Agents's tools work — bash, file read/write/edit, grep, glob, agents, tasks, MCP — just powered by whatever model you choose.
 
 ---
 
 ## Install
-
-### Option A: npm (recommended)
-
-```bash
-npm install -g @gitlawb/openclaude
-```
-
-### Option B: From source (requires Bun)
-
-```bash
-# Clone from gitlawb
-git clone https://node.gitlawb.com/z6MkqDnb7Siv3Cwj7pGJq4T5EsUisECqR8KpnDLwcaZq5TPr/openclaude.git
-cd openclaude
-
-# Install dependencies
-bun install
-
-# Build
-bun run build
-
-# Link globally (optional)
-npm link
-```
-
-### Option C: Run directly with Bun (no build step)
-
-```bash
-git clone https://node.gitlawb.com/z6MkqDnb7Siv3Cwj7pGJq4T5EsUisECqR8KpnDLwcaZq5TPr/openclaude.git
-cd openclaude
-bun install
-bun run dev
-```
 
 ---
 
