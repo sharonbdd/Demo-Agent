@@ -3,8 +3,8 @@
 ## Current Status
 - Current iteration: Iteration 8 (Agent-ACP verification and hardening)
 - Current focus: final JetBrains custom-agent testing and real IDEA MCP validation against the hardened cross-platform ACP bridge
-- Overall state: the ACP bridge is now platform-aware for Windows/Linux launch behavior, returns user-visible explanations on early-stop paths, has confirmation-first FIX/CODE behavior with a `brave` override, and passes the local bridge/template/e2e test suite; the remaining work is live JetBrains/provider validation and only the minimum Anthropic decoupling still required for non-Anthropic backends
-- Last updated after: Iteration 8 cross-platform launcher hardening and non-abrupt failure handling
+- Overall state: the ACP bridge is now platform-aware for Windows/Linux launch behavior, returns user-visible explanations on early-stop paths, has confirmation-first FIX/CODE behavior with a `brave` override, rewrites Windows `Bash` calls to `PowerShell` across fallback and runtime lookup paths, and passes the local bridge/template/e2e test suite plus a clean CLI build; the remaining work is live JetBrains/provider validation and only the minimum Anthropic decoupling still required for non-Anthropic backends
+- Last updated after: Iteration 8 Windows shell-tool remap hardening and fresh-build stub validation
 
 ---
 
@@ -73,6 +73,14 @@
 - [x] Added a provider-agnostic fallback that converts XML-style raw tool-call text (for example `<function=Bash>...</function>`) into real `tool_use` blocks before the query loop executes tools.
 - [x] Added Bun regression coverage for the raw tool-call fallback parser.
 - [x] Built `dist/openclaude-acp-low-v2.exe` as an additional LOW replacement artifact because `dist/openclaude-acp-low-updated.exe` was locked during the latest rebuild.
+- [x] Hardened the raw tool-call fallback for Windows so provider-emitted `Bash` XML markup is remapped into a real `PowerShell` tool call with the original tool name retained for diagnostics.
+- [x] Re-ran the local ACP-focused Python verification suite successfully after the Windows raw-tool-call fix (`39 passed`).
+- [x] Re-ran the Bun raw tool-call fallback regression suite successfully after the Windows remap change (`4 passed`).
+- [x] Added a shared shell-tool normalization helper so Windows `Bash` tool calls resolve to `PowerShell` in runtime lookup paths, not only in the XML fallback parser.
+- [x] Updated the built-in tool list so Windows sessions prefer exposing `PowerShell` instead of `Bash` when the PowerShell tool is enabled.
+- [x] Added focused Bun regression coverage for shell-tool normalization and `findToolByName()` shell remapping (`10 passed` across fallback/helper/lookup tests).
+- [x] Kept the open-repo `src/utils/antModelOverrideConfig.ts` stub explicit so fresh builds resolve `./antModelOverrideConfig.js` without Anthropic-internal files.
+- [x] Re-ran `bun run build` successfully after the open-repo override-stub validation.
 
 ---
 
@@ -163,6 +171,16 @@
 - Decision: Detect text-only XML-style function markup and synthesize a real `tool_use` block before the standard query/tool execution loop runs.
 - Impact: The runtime can now recover from that provider behavior instead of exposing raw tool markup to the user.
 
+### [Windows Raw Tool-Call Shell Remapping]
+- Context: Some providers still emit raw XML-style `Bash` tool calls even in Windows sessions where the ACP bridge and runtime policy correctly prefer PowerShell.
+- Decision: When the fallback parser reconstructs a raw `Bash` tool call on Windows, remap it to `PowerShell` and preserve the original tool name in the synthesized input for debugging.
+- Impact: Windows sessions can recover from provider-side raw tool-call formatting without stalling on the wrong shell tool or leaking the malformed tool markup back to the user.
+
+### [Windows Shell Tool Normalization In Runtime Lookup]
+- Context: Fixing only the raw XML fallback still left a gap where normal runtime tool lookup and exposed tool lists could disagree about whether Windows should use `Bash` or `PowerShell`.
+- Decision: Centralize shell-tool normalization in `src/utils/shell/shellToolUtils.ts`, use it in `findToolByName()`, and prefer `PowerShell` in the Windows tool list when the PowerShell tool is enabled.
+- Impact: Windows sessions now stay consistent across provider fallback recovery, regular tool resolution, and the tool surface shown to the model.
+
 ---
 
 ## Known Gaps / Issues
@@ -178,9 +196,11 @@
 - The local `~/.jetbrains/acp.json` contains a live HuggingFace key and is not sanitized; this is outside the repo but relevant operationally.
 - Shared runtime paths still include Anthropic SDK type imports and some ant-only assumptions, so the provider-neutralization work is not complete yet.
 - Real-provider prompt behavior should be re-checked after the Windows bridge rebuild, because the prior startup failure path overlapped with session-persistence code in the packaged ACP bridge.
+- Real JetBrains validation is still required to confirm provider-emitted `Bash` calls are recovered end to end now that runtime lookup and tool exposure also prefer `PowerShell` on Windows.
 - `dist\\openclaude-acp-low.exe` could not be replaced during the latest rebuild because a running JetBrains process locked the file; `dist\\openclaude-acp-low-updated.exe` contains the latest code until the lock is released.
 - `dist\\openclaude-acp-high.exe` was also locked during the latest rebuild; `dist\\openclaude-acp-high-updated.exe` contains the latest code until that lock is released.
 - `dist\\openclaude-acp-low-updated.exe` was locked during the latest rebuild; `dist\\openclaude-acp-low-v2.exe` is the current LOW replacement artifact with the latest raw-tool-call fallback fix.
+- The local PowerShell session still auto-loads `C:\\Users\\Sharon Boddu\\Documents\\WindowsPowerShell\\profile.ps1`, which emits a missing `C:\\Python\\Scripts\\conda.exe` error banner even when the invoked command succeeds; this is environmental noise rather than an OpenClaude runtime failure.
 
 ---
 

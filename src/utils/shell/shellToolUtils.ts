@@ -20,3 +20,30 @@ export function isPowerShellToolEnabled(): boolean {
     ? !isEnvDefinedFalsy(process.env.CLAUDE_CODE_USE_POWERSHELL_TOOL)
     : isEnvTruthy(process.env.CLAUDE_CODE_USE_POWERSHELL_TOOL)
 }
+
+export function normalizeShellToolName(
+  toolName: string,
+  currentPlatform: string = getPlatform(),
+  powerShellEnabled: boolean = isPowerShellToolEnabled(),
+): string {
+  if (
+    toolName === BASH_TOOL_NAME &&
+    currentPlatform === 'windows' &&
+    powerShellEnabled
+  ) {
+    return POWERSHELL_TOOL_NAME
+  }
+
+  return toolName
+}
+
+export function getPreferredShellToolName(
+  currentPlatform: string = getPlatform(),
+  powerShellEnabled: boolean = isPowerShellToolEnabled(),
+): string {
+  return normalizeShellToolName(
+    BASH_TOOL_NAME,
+    currentPlatform,
+    powerShellEnabled,
+  )
+}

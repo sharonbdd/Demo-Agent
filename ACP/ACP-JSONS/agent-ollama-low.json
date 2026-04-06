@@ -1,0 +1,21 @@
+{
+  "default_mcp_settings": {
+    "use_custom_mcp": true,
+    "use_idea_mcp": true
+  },
+  "agent_servers": {
+    "OpenClaude Ollama LOW": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-low.exe",
+      "args": [],
+      "env": {
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
+        "OPENAI_BASE_URL": "http://localhost:11434/v1",
+        "OPENAI_MODEL": "qwen2.5-coder:7b",
+        "OPENCLAUDE_MODEL_PROVIDER": "ollama",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "low",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
+        "CLAUDE_CODE_USE_OPENAI": "1"
+      }
+    }
+  }
+}

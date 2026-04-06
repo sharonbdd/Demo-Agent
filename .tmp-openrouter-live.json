@@ -1,0 +1,16 @@
+{
+  "updated_at": "2026-04-06T17:47:09.716861+00:00",
+  "sessions": [
+    {
+      "session_id": "370427fe-b665-4df7-9c97-8939bc281dc1",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "qwen/qwen3.6-plus:free",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "title": "Reply with the single word READY.",
+      "updated_at": "2026-04-06T17:47:09.714868+00:00",
+      "has_started": false,
+      "permission_cache": {}
+    }
+  ]
+}

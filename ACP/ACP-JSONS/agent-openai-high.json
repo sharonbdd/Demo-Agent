@@ -1,0 +1,22 @@
+{
+  "default_mcp_settings": {
+    "use_custom_mcp": true,
+    "use_idea_mcp": true
+  },
+  "agent_servers": {
+    "OpenClaude OpenAI HIGH": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-high.exe",
+      "args": [],
+      "env": {
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
+        "OPENAI_BASE_URL": "https://api.openai.com/v1",
+        "OPENAI_MODEL": "gpt-4o",
+        "OPENCLAUDE_MODEL_PROVIDER": "openai",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "high",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
+        "CLAUDE_CODE_USE_OPENAI": "1",
+        "OPENAI_API_KEY": "__SET_OPENAI_API_KEY__"
+      }
+    }
+  }
+}

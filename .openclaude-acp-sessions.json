@@ -1,0 +1,161 @@
+{
+  "updated_at": "2026-04-06T20:14:28.249937+00:00",
+  "sessions": [
+    {
+      "session_id": "89b4c627-d74a-47e6-8db5-a5e394631659",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "hi",
+      "updated_at": "2026-04-06T17:05:52.919272+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "7d545d7b-ee25-4e71-8c03-39bd5b41c3cf",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "brave": false,
+      "title": "Demo-Agent",
+      "updated_at": "2026-04-06T17:08:00.426139+00:00",
+      "has_started": false,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "98b33e00-2aa2-451c-97c7-4e556a72718d",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "qwen/qwen3.6-plus:free",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Hi",
+      "updated_at": "2026-04-06T18:22:41.527950+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "c9e440e1-f060-47ab-af8c-374919885879",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Hi",
+      "updated_at": "2026-04-06T18:26:50.807641+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "0ee7322c-1915-405a-a972-f8d5f8cda2f3",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "brave": false,
+      "title": "Speaker",
+      "updated_at": "2026-04-06T18:37:36.580557+00:00",
+      "has_started": false,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "f76ba8c4-82e1-4a04-b7c4-5cdefef20550",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Hi",
+      "updated_at": "2026-04-06T18:38:19.121333+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "83312fb6-9bdd-4e90-8a27-41a1e67ca07c",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "qwen/qwen3.6-plus:free",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Hello",
+      "updated_at": "2026-04-06T18:46:15.396638+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "db29f364-94a7-44ad-b403-34eafeadf1ad",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "hi",
+      "updated_at": "2026-04-06T18:49:39.500989+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "6bf34182-b0c0-4a73-ac45-0a6011687396",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen3-Coder-Next-FP8:together",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Hi",
+      "updated_at": "2026-04-06T19:01:53.879180+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "ee4c7af5-b756-4861-b81c-5fe85ecb77d6",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen3-Coder-Next-FP8:together",
+      "context_profile": "low",
+      "workflow_mode": "ask",
+      "brave": false,
+      "title": "Go through my project and tell me your thoughts on it. What is not good,",
+      "updated_at": "2026-04-06T19:19:08.205915+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "launch-fail",
+      "cwd": "F:\\PyCharm\\Demo-Agent",
+      "model": "qwen/qwen3.6-plus:free",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "brave": false,
+      "title": "[empty prompt]",
+      "updated_at": "2026-04-06T19:40:39.270087+00:00",
+      "has_started": false,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "6d092c39-125b-4bc5-b1ee-6fef1cbf4cdf",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen2.5-Coder-32B-Instruct",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "brave": false,
+      "title": "Speaker",
+      "updated_at": "2026-04-06T19:18:16.793489+00:00",
+      "has_started": false,
+      "permission_cache": {}
+    },
+    {
+      "session_id": "e331a2fb-9493-486e-a524-dd1ed398941f",
+      "cwd": "F:\\PyCharm\\Speaker",
+      "model": "Qwen/Qwen3-Coder-Next-FP8:together",
+      "context_profile": "low",
+      "workflow_mode": "code",
+      "brave": false,
+      "title": "Go through my project and tell me your thoughts on it. What is not good,",
+      "updated_at": "2026-04-06T20:14:28.246935+00:00",
+      "has_started": true,
+      "permission_cache": {}
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "default_mcp_settings": {
+    "use_custom_mcp": true,
+    "use_idea_mcp": true
+  },
+  "agent_servers": {
+    "OpenClaude HuggingFace LOW": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-low.exe",
+      "args": [],
+      "env": {
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
+        "OPENAI_BASE_URL": "https://router.huggingface.co/v1",
+        "OPENAI_MODEL": "Qwen/Qwen3-Coder-Next-FP8:together",
+        "OPENCLAUDE_MODEL_PROVIDER": "huggingface",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "low",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
+        "CLAUDE_CODE_USE_OPENAI": "1",
+        "HF_TOKEN": "__SET_HUGGINGFACE_API_KEY__"
+      }
+    }
+  }
+}

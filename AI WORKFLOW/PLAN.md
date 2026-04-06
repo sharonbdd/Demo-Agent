@@ -291,6 +291,8 @@ Subtasks:
 - [x] Align the HuggingFace ACP templates with the requested Router model and token style.
 - [x] Make the ACP bridge launcher path and shell guidance platform-aware for Windows vs Linux.
 - [x] Convert bridge/runtime early-stop paths into user-visible ACP responses instead of silent mid-turn failures.
+- [x] Normalize Windows `Bash` calls to `PowerShell` consistently across raw tool-call fallback, runtime tool lookup, and the exposed built-in shell tool list.
+- [x] Keep the open-repo `antModelOverrideConfig` stub in place so fresh builds do not fail resolving `./antModelOverrideConfig.js`.
 
 ---
 
