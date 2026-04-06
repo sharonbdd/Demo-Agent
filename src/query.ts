@@ -110,6 +110,7 @@ import {
 } from './bootstrap/state.js'
 import { createBudgetTracker, checkTokenBudget } from './query/tokenBudget.js'
 import { count } from './utils/array.js'
+import { convertAssistantTextToolCallFallback } from './utils/toolCallFallback.js'
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const snipModule = feature('HISTORY_SNIP')
@@ -820,13 +821,21 @@ async function* queryLoop(
             if (isWithheldMaxOutputTokens(message)) {
               withheld = true
             }
+            let runtimeMessage = message
+            if (message.type === 'assistant') {
+              runtimeMessage = convertAssistantTextToolCallFallback(message)
+              if (runtimeMessage !== message) {
+                yieldMessage = runtimeMessage
+              }
+            }
+
             if (!withheld) {
               yield yieldMessage
             }
-            if (message.type === 'assistant') {
-              assistantMessages.push(message)
+            if (runtimeMessage.type === 'assistant') {
+              assistantMessages.push(runtimeMessage)
 
-              const msgToolUseBlocks = message.message.content.filter(
+              const msgToolUseBlocks = runtimeMessage.message.content.filter(
                 content => content.type === 'tool_use',
               ) as ToolUseBlock[]
               if (msgToolUseBlocks.length > 0) {
@@ -839,7 +848,7 @@ async function* queryLoop(
                 !toolUseContext.abortController.signal.aborted
               ) {
                 for (const toolBlock of msgToolUseBlocks) {
-                  streamingToolExecutor.addTool(toolBlock, message)
+                  streamingToolExecutor.addTool(toolBlock, runtimeMessage)
                 }
               }
             }

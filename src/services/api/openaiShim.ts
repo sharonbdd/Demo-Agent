@@ -475,19 +475,42 @@ class OpenAIShimStream {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Error Handling
+// ---------------------------------------------------------------------------
+
+/**
+ * Custom error class for OpenAI shim failures.
+ * Mimics Anthropic SDK's APIError where needed for retry logic compatibility.
+ */
+export class OpenAIShimError extends Error {
+  public status: number
+  public name = 'OpenAIShimError'
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+    Object.setPrototypeOf(this, OpenAIShimError.prototype)
+  }
+}
+
 class OpenAIShimMessages {
   private baseUrl: string
   private apiKey: string
   private defaultHeaders: Record<string, string>
+  private lastRequestTime = 0
+  private requestDelayMs: number
 
   constructor(
     baseUrl: string,
     apiKey: string,
     defaultHeaders: Record<string, string>,
+    requestDelayMs = 0,
   ) {
     this.baseUrl = baseUrl
     this.apiKey = apiKey
     this.defaultHeaders = defaultHeaders
+    this.requestDelayMs = requestDelayMs
   }
 
   create(
@@ -589,6 +612,17 @@ class OpenAIShimMessages {
       headers['Authorization'] = `Bearer ${this.apiKey}`
     }
 
+    // Apply delay if configured
+    if (this.requestDelayMs > 0) {
+      const now = Date.now()
+      const timeSinceLastRequest = now - this.lastRequestTime
+      if (timeSinceLastRequest < this.requestDelayMs) {
+        const delay = this.requestDelayMs - timeSinceLastRequest
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
+      this.lastRequestTime = Date.now()
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers,
@@ -598,7 +632,8 @@ class OpenAIShimMessages {
 
     if (!response.ok) {
       const errorBody = await response.text().catch(() => 'unknown error')
-      throw new Error(
+      throw new OpenAIShimError(
+        response.status,
         `OpenAI API error ${response.status}: ${errorBody}`,
       )
     }
@@ -684,8 +719,14 @@ class OpenAIShimBeta {
     baseUrl: string,
     apiKey: string,
     defaultHeaders: Record<string, string>,
+    requestDelayMs = 0,
   ) {
-    this.messages = new OpenAIShimMessages(baseUrl, apiKey, defaultHeaders)
+    this.messages = new OpenAIShimMessages(
+      baseUrl,
+      apiKey,
+      defaultHeaders,
+      requestDelayMs,
+    )
   }
 }
 
@@ -713,7 +754,11 @@ export function createOpenAIShimClient(options: {
     ...(options.defaultHeaders ?? {}),
   }
 
-  const beta = new OpenAIShimBeta(baseUrl, apiKey, headers)
+  // Default delay to 500ms if not specified, to prevent rapid-fire rate limits
+  const envDelay = process.env.OPENAI_REQUEST_DELAY_MS
+  const requestDelayMs = envDelay !== undefined ? parseInt(envDelay, 10) : 500
+
+  const beta = new OpenAIShimBeta(baseUrl, apiKey, headers, requestDelayMs)
 
   // Duck-type as Anthropic client
   return {

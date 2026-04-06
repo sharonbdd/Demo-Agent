@@ -9,15 +9,18 @@
     ]
   },
   "agent_servers": {
-    "Demo Agent": {
-      "command": "F:\\PyCharm\\openclaude\\dist\\openclaude-acp-modes.exe",
+    "Demo Agent (legacy compatibility sample)": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-modes.exe",
       "args": [],
       "env": {
-        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\openclaude",
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
         "OPENAI_BASE_URL": "https://openrouter.ai/api/v1",
         "OPENAI_MODEL": "qwen/qwen3.6-plus:free",
+        "OPENCLAUDE_MODEL_PROVIDER": "openrouter",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "low",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
         "CLAUDE_CODE_USE_OPENAI": "1",
-        "OPEN_ROUTER_KEY": "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"
+        "OPEN_ROUTER_KEY": "__SET_OPENROUTER_KEY__"
       }
     }
   }

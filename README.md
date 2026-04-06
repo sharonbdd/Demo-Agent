@@ -8,7 +8,181 @@ All of AI Agents's tools work — bash, file read/write/edit, grep, glob, agents
 
 ---
 
-## Install
+## PyCharm Integration (Zero to 100)
+
+OpenClaude can run in PyCharm as a custom ACP agent through the JetBrains AI plugin.
+
+### 1. Prerequisites
+- PyCharm with JetBrains AI Assistant enabled.
+- Bun installed locally for the OpenClaude CLI runtime.
+- Python 3.10+ for `scripts/openclaude_acp_bridge.py`.
+- One provider configured: OpenRouter, OpenAI, HuggingFace, Ollama, or another OpenAI-compatible local server.
+
+### 2. Build the runtime once
+```powershell
+bun run build
+pip install pyinstaller agent-client-protocol
+python -m PyInstaller --onefile scripts/openclaude_acp_low.py --distpath dist --name openclaude-acp-low
+python -m PyInstaller --onefile scripts/openclaude_acp_high.py --distpath dist --name openclaude-acp-high
+```
+
+This produces:
+- `dist/cli.mjs`
+- `dist/openclaude-acp-low.exe` and `dist/openclaude-acp-high.exe` on Windows
+- `dist/openclaude-acp-low` and `dist/openclaude-acp-high` on Linux when built there
+
+### 3. Configure `~/.jetbrains/acp.json`
+```json
+{
+  "default_mcp_settings": {
+    "use_custom_mcp": true,
+    "use_idea_mcp": true
+  },
+  "agent_servers": {
+    "OpenClaude LOW": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-low.exe",
+      "env": {
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
+        "OPEN_ROUTER_KEY": "your-api-key-here",
+        "OPENAI_BASE_URL": "https://openrouter.ai/api/v1",
+        "OPENAI_MODEL": "qwen/qwen3.6-plus:free",
+        "OPENCLAUDE_MODEL_PROVIDER": "openrouter",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "low",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
+        "CLAUDE_CODE_USE_OPENAI": "1"
+      }
+    },
+    "OpenClaude HIGH": {
+      "command": "F:\\PyCharm\\Demo-Agent\\dist\\openclaude-acp-high.exe",
+      "env": {
+        "OPENCLAUDE_REPO_ROOT": "F:\\PyCharm\\Demo-Agent",
+        "OPEN_ROUTER_KEY": "your-api-key-here",
+        "OPENAI_BASE_URL": "https://openrouter.ai/api/v1",
+        "OPENAI_MODEL": "openai/gpt-4o",
+        "OPENCLAUDE_MODEL_PROVIDER": "openrouter",
+        "OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE": "high",
+        "OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE": "code",
+        "CLAUDE_CODE_USE_OPENAI": "1"
+      }
+    }
+  }
+}
+```
+
+Provider examples:
+- OpenRouter: `OPENAI_BASE_URL=https://openrouter.ai/api/v1`
+- HuggingFace: `OPENAI_BASE_URL=https://router.huggingface.co/v1`
+- Ollama: `OPENAI_BASE_URL=http://localhost:11434/v1`
+- Local OpenAI-compatible server: `OPENAI_BASE_URL=http://localhost:8080/v1`
+
+Optional bridge env:
+- `OPENCLAUDE_ACP_MODELS=model-a,model-b` to fully override the model picker
+- `OPENCLAUDE_EXTRA_MODELS=model-c,model-d` to append choices
+- `OPENCLAUDE_MODEL_PROVIDER=openrouter|huggingface|openai|ollama|local_openai|auto`
+- `OPENCLAUDE_ACP_DEFAULT_CONTEXT_PROFILE=low|high` to pin the default profile for a launcher
+- `OPENCLAUDE_ACP_DEFAULT_WORKFLOW_MODE=ask|plan|fix|code` to pin the default workflow role
+
+For OpenRouter presets, `OPEN_ROUTER_KEY`, `OPENROUTER_API_KEY`, and `OPENAI_API_KEY` are all accepted. The bundled Windows launcher maps the OpenRouter-specific names into `OPENAI_API_KEY` automatically.
+
+### 4. ACP session modes
+- **Ask**: consultant/spec mode, no edits, read-only tools
+- **Plan**: architect mode, Markdown-only edits plus read/search/fetch tools
+- **Fix**: tester/debugger mode, bounded repair workflow
+- **Code**: normal implementation mode
+
+Capacity profile is a separate control from workflow mode:
+- **LOW**: smaller context budget, earlier compaction, concise planning
+- **HIGH**: larger context budget, richer replay, deeper planning and verification
+
+You can switch profiles and workflow roles in-session via ACP config options or slash commands such as `/low`, `/high`, `/ask`, `/plan`, `/fix`, and `/code`.
+
+---
+
+## Tool Capability Inventory
+
+The source of truth is `src/tools.ts`. In the open build, tool availability falls into three buckets:
+
+- `Available`: present in the default open build when the normal runtime conditions are met.
+- `Conditional`: built from source but requires an env flag, runtime mode, or optional feature gate.
+- `Disabled in open build`: referenced in source, but the current `scripts/build.ts` turns the feature flag off.
+
+### Available now
+
+| Tool | Status | Notes |
+|------|--------|-------|
+| `Agent` | Available | Sub-agent execution entry point. Legacy alias: `Task`. |
+| `AskUserQuestion` | Available | Interactive clarification prompt. |
+| `Bash` | Available | Shell execution on Unix-like environments. |
+| `Edit` | Available | Surgical file edits. |
+| `Read` | Available | File reads with range and size controls. |
+| `Write` | Available | Full file writes. |
+| `Glob` | Available | File pattern search when embedded search tools are absent. |
+| `Grep` | Available | Text search when embedded search tools are absent. |
+| `NotebookEdit` | Available | Notebook-specific editing. |
+| `WebFetch` | Available | URL fetch and markdown conversion. |
+| `WebSearch` | Available | Web search integration. |
+| `TodoWrite` | Available | Session todo state updates. |
+| `TaskStop` | Available | Stop current multi-step task. |
+| `SendUserMessage` | Available | User-facing summary/message tool. Legacy alias: `Brief`. |
+| `Skill` | Available | Executes installed skill workflows. |
+| `EnterPlanMode` | Available | Switches agent into planning state. |
+| `ListMcpResourcesTool` | Available | Lists MCP resources. |
+| `ReadMcpResource` | Available | Reads MCP resources. |
+| `SendMessage` | Available | Message another agent or teammate. |
+| `ToolSearch` | Conditional | Available when tool-search gating is enabled. |
+| `PowerShell` | Conditional | Available when shell detection enables Windows PowerShell support. |
+
+### Conditional in the open repo
+
+| Tool | Status | Enablement |
+|------|--------|------------|
+| `TaskCreate` | Conditional | Requires Todo v2/task support. |
+| `TaskGet` | Conditional | Requires Todo v2/task support. |
+| `TaskUpdate` | Conditional | Requires Todo v2/task support. |
+| `TaskList` | Conditional | Requires Todo v2/task support. |
+| `LSP` | Conditional | Requires `ENABLE_LSP_TOOL`. |
+| `EnterWorktree` | Conditional | Requires worktree mode. |
+| `ExitWorktree` | Conditional | Requires worktree mode. |
+| `REPL` | Conditional | Ant-only runtime path. |
+| `Config` | Conditional | Ant-only runtime path. |
+| `Tungsten` | Conditional | Ant-only runtime path. |
+| `TestingPermission` | Conditional | Test-only (`NODE_ENV=test`). |
+| `VerifyPlanExecution` | Conditional | Requires `CLAUDE_CODE_VERIFY_PLAN=true`. |
+
+### Present in source, disabled by the current open build flags
+
+| Tool | Status | Source gating |
+|------|--------|---------------|
+| `SuggestBackgroundPR` | Disabled in open build | `PROACTIVE` |
+| `Sleep` | Disabled in open build | `PROACTIVE` or `KAIROS` |
+| `CronCreate` | Disabled in open build | `AGENT_TRIGGERS` |
+| `CronDelete` | Disabled in open build | `AGENT_TRIGGERS` |
+| `CronList` | Disabled in open build | `AGENT_TRIGGERS` |
+| `RemoteTrigger` | Disabled in open build | `AGENT_TRIGGERS_REMOTE` |
+| `Monitor` | Disabled in open build | `MONITOR_TOOL` |
+| `SendUserFile` | Disabled in open build | `KAIROS` |
+| `PushNotification` | Disabled in open build | `KAIROS` or `KAIROS_PUSH_NOTIFICATION` |
+| `SubscribePR` | Disabled in open build | `KAIROS_GITHUB_WEBHOOKS` |
+| `OverflowTest` | Disabled in open build | `OVERFLOW_TEST_TOOL` |
+| `CtxInspect` | Disabled in open build | `CONTEXT_COLLAPSE` |
+| `TerminalCapture` | Disabled in open build | `TERMINAL_PANEL` |
+| `WebBrowser` | Disabled in open build | `WEB_BROWSER_TOOL` |
+| `Snip` | Disabled in open build | `HISTORY_SNIP` |
+| `ListPeers` | Disabled in open build | `UDS_INBOX` |
+| `WorkflowTool` | Disabled in open build | `WORKFLOW_SCRIPTS` |
+| `TeamCreate` | Disabled in open build | agent swarms/team mode |
+| `TeamDelete` | Disabled in open build | agent swarms/team mode |
+
+### Internal or protocol-level capabilities
+
+These exist as tool-adjacent capabilities but are not normal end-user built-ins in the current open build:
+
+- `StructuredOutput`
+- MCP server tools created dynamically from connected MCP servers
+- `McpAuthTool`
+- `MCPTool` wrapper infrastructure
+
+Across base tools, aliases, conditional tools, disabled-by-flag tools, and protocol-generated MCP tools, the repo exposes well over 47 tool-calling capabilities.
 
 ---
 
@@ -135,6 +309,7 @@ export OPENAI_MODEL=gpt-4o
 | `OPENAI_API_KEY` | Yes* | Your API key (*not needed for local models like Ollama) |
 | `OPENAI_MODEL` | Yes | Model name (e.g. `gpt-4o`, `deepseek-chat`, `llama3.3:70b`) |
 | `OPENAI_BASE_URL` | No | API endpoint (defaults to `https://api.openai.com/v1`) |
+| `OPENAI_REQUEST_DELAY_MS` | No | Minimum delay in milliseconds between LLM requests. Default: `500` (to prevent rapid-fire rate limits). |
 
 You can also use `ANTHROPIC_MODEL` to override the model name. `OPENAI_MODEL` takes priority.
 
@@ -197,7 +372,75 @@ For `dev:ollama`, make sure Ollama is running locally before launch.
 
 ---
 
-## What Works
+## Build Instructions
+
+### Cross-Platform Executables (v2.0)
+
+#### CLI Executable
+To bundle the OpenClaude CLI into a standalone binary:
+
+**Windows:**
+```bash
+bun build --compile --target=bun-windows-x64 ./src/entrypoints/cli.tsx --outfile dist/openclaude-local/openclaude-local.exe
+```
+
+**Linux:**
+```bash
+bun build --compile --target=bun-linux-x64 ./src/entrypoints/cli.tsx --outfile dist/openclaude-linux
+```
+
+Or use the helper script:
+```bash
+./scripts/build-linux.sh
+```
+
+#### ACP Bridge
+The ACP bridge is a Python script that requires the `agent-client-protocol` library.
+
+To create standalone binaries:
+```bash
+pip install pyinstaller agent-client-protocol
+python -m PyInstaller --onefile scripts/openclaude_acp_low.py --distpath dist --name openclaude-acp-low
+python -m PyInstaller --onefile scripts/openclaude_acp_high.py --distpath dist --name openclaude-acp-high
+```
+*(On Linux, this will produce ELF binaries named `openclaude-acp-low` and `openclaude-acp-high` in `dist/`)*
+
+Optional compatibility build:
+```bash
+python -m PyInstaller --onefile scripts/openclaude_acp_bridge.py --distpath dist --name openclaude-acp-modes
+```
+
+Recommended Linux packaging flow:
+```bash
+bun run build
+bun build --compile --target=bun-linux-x64 ./src/entrypoints/cli.tsx --outfile dist/openclaude-linux/openclaude
+python3 -m PyInstaller --onefile scripts/openclaude_acp_low.py --distpath dist/openclaude-linux --name openclaude-acp-low
+python3 -m PyInstaller --onefile scripts/openclaude_acp_high.py --distpath dist/openclaude-linux --name openclaude-acp-high
+```
+
+---
+
+## Provider Configuration (v2.0)
+
+### HuggingFace API
+To use HuggingFace Inference Endpoints:
+```bash
+export CLAUDE_CODE_USE_OPENAI=1
+export OPENAI_BASE_URL=https://router.huggingface.co/v1
+export OPENAI_API_KEY=hf_your_token_here
+export OPENAI_MODEL=meta-llama/Llama-3.3-70B-Instruct
+```
+
+### Local OpenAI (LM Studio / LocalAI)
+To use a generic OpenAI-compatible local server:
+```bash
+export CLAUDE_CODE_USE_OPENAI=1
+export OPENAI_BASE_URL=http://localhost:8080/v1
+export OPENAI_API_KEY=any-value-or-empty
+export OPENAI_MODEL=your-local-model
+```
+
+---
 
 - **All tools**: Bash, FileRead, FileWrite, FileEdit, Glob, Grep, WebFetch, WebSearch, Agent, MCP, LSP, NotebookEdit, Tasks
 - **Streaming**: Real-time token streaming

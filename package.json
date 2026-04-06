@@ -32,6 +32,14 @@
     "doctor:report": "bun run scripts/system-check.ts --out reports/doctor-runtime.json",
     "hardening:check": "bun run smoke && bun run doctor:runtime",
     "hardening:strict": "bun run typecheck && bun run hardening:check",
+    "build:linux": "bash ./scripts/build-linux.sh",
+    "build:linux:cli": "bun build --compile --target=bun-linux-x64 ./src/entrypoints/cli.tsx --outfile dist/openclaude-linux/openclaude",
+    "build:linux:bridge": "python3 -m PyInstaller --onefile scripts/openclaude_acp_bridge.py --distpath dist/openclaude-linux --name openclaude-acp-modes",
+    "build:linux:bridge:low": "python3 -m PyInstaller --onefile scripts/openclaude_acp_low.py --distpath dist/openclaude-linux --name openclaude-acp-low",
+    "build:linux:bridge:high": "python3 -m PyInstaller --onefile scripts/openclaude_acp_high.py --distpath dist/openclaude-linux --name openclaude-acp-high",
+    "build:windows:bridge": "python -m PyInstaller --onefile scripts/openclaude_acp_bridge.py --distpath dist --name openclaude-acp-modes",
+    "build:windows:bridge:low": "python -m PyInstaller --onefile scripts/openclaude_acp_low.py --distpath dist --name openclaude-acp-low",
+    "build:windows:bridge:high": "python -m PyInstaller --onefile scripts/openclaude_acp_high.py --distpath dist --name openclaude-acp-high",
     "prepack": "npm run build"
   },
   "dependencies": {

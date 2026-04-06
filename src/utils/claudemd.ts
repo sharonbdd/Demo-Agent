@@ -3,7 +3,7 @@
  *
  * 1. Managed memory (eg. /etc/claude-code/CLAUDE.md) - Global instructions for all users
  * 2. User memory (~/.claude/CLAUDE.md) - Private global instructions for all projects
- * 3. Project memory (CLAUDE.md, .claude/CLAUDE.md, and .claude/rules/*.md in project roots) - Instructions checked into the codebase
+ * 3. Project memory (CLAUDE.md, .claude/CLAUDE.md, .claude/rules/*.md, and AI WORKFLOW/*.md in project roots) - Instructions checked into the codebase
  * 4. Local memory (CLAUDE.local.md in project roots) - Private project-specific instructions
  *
  * Files are loaded in reverse order of priority, i.e. the latest files are highest priority
@@ -13,7 +13,7 @@
  * - User memory is loaded from the user's home directory
  * - Project and Local files are discovered by traversing from the current directory up to root
  * - Files closer to the current directory have higher priority (loaded later)
- * - CLAUDE.md, .claude/CLAUDE.md, and all .md files in .claude/rules/ are checked in each directory for Project memory
+ * - CLAUDE.md, .claude/CLAUDE.md, all .md files in .claude/rules/, and AI WORKFLOW/{AGENTS,PLAN,PROGRESS,NEXT_TASKS}.md are checked in each directory for Project memory
  *
  * Memory @include directive:
  * - Memory files can include other files using @ notation
@@ -85,6 +85,13 @@ const teamMemPaths = feature('TEAMMEM')
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 let hasLoggedInitialLoad = false
+
+const AI_WORKFLOW_FILENAMES = [
+  'AGENTS.md',
+  'PLAN.md',
+  'PROGRESS.md',
+  'NEXT_TASKS.md',
+] as const
 
 const MEMORY_INSTRUCTION_PROMPT =
   'Codebase and user instructions are shown below. Be sure to adhere to these instructions. IMPORTANT: These instructions OVERRIDE any default behavior and you MUST follow them exactly as written.'
@@ -240,6 +247,35 @@ export type MemoryFileInfo = {
   // explicit Read before proceeding.
   contentDiffersFromDisk?: boolean
   rawContent?: string
+}
+
+function isAiWorkflowMemoryFile(filePath: string): boolean {
+  const name = basename(filePath)
+  if (!AI_WORKFLOW_FILENAMES.includes(name as (typeof AI_WORKFLOW_FILENAMES)[number])) {
+    return false
+  }
+
+  return dirname(filePath).endsWith(`${sep}AI WORKFLOW`)
+}
+
+async function processAiWorkflowFiles(
+  dir: string,
+  processedPaths: Set<string>,
+  includeExternal: boolean,
+): Promise<MemoryFileInfo[]> {
+  const result: MemoryFileInfo[] = []
+  const workflowDir = join(dir, 'AI WORKFLOW')
+  for (const filename of AI_WORKFLOW_FILENAMES) {
+    result.push(
+      ...(await processMemoryFile(
+        join(workflowDir, filename),
+        'Project',
+        processedPaths,
+        includeExternal,
+      )),
+    )
+  }
+  return result
 }
 
 function pathInOriginalCwd(path: string): boolean {
@@ -917,6 +953,11 @@ export const getMemoryFiles = memoize(
             conditionalRule: false,
           })),
         )
+
+        // Try reading AI WORKFLOW/*.md files (Project)
+        result.push(
+          ...(await processAiWorkflowFiles(dir, processedPaths, includeExternal)),
+        )
       }
 
       // Try reading CLAUDE.local.md (Local) - only if localSettings is enabled
@@ -972,6 +1013,11 @@ export const getMemoryFiles = memoize(
             includeExternal,
             conditionalRule: false,
           })),
+        )
+
+        // Try reading AI WORKFLOW/*.md files from the additional directory
+        result.push(
+          ...(await processAiWorkflowFiles(dir, processedPaths, includeExternal)),
         )
       }
     }
@@ -1430,7 +1476,7 @@ export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boole
 }
 
 /**
- * Check if a file path is a memory file (CLAUDE.md, CLAUDE.local.md, or .claude/rules/*.md)
+ * Check if a file path is a memory file (CLAUDE.md, CLAUDE.local.md, .claude/rules/*.md, or AI WORKFLOW/*.md)
  */
 export function isMemoryFilePath(filePath: string): boolean {
   const name = basename(filePath)
@@ -1445,6 +1491,10 @@ export function isMemoryFilePath(filePath: string): boolean {
     name.endsWith('.md') &&
     filePath.includes(`${sep}.claude${sep}rules${sep}`)
   ) {
+    return true
+  }
+
+  if (isAiWorkflowMemoryFile(filePath)) {
     return true
   }
 

@@ -3,6 +3,7 @@ import {
   APIConnectionTimeoutError,
   APIError,
 } from '@anthropic-ai/sdk'
+import { OpenAIShimError } from './openaiShim.js'
 import type {
   BetaMessage,
   BetaStopReason,
@@ -994,15 +995,19 @@ export function classifyAPIError(error: unknown): string {
   }
 
   // Rate limiting
-  if (error instanceof APIError && error.status === 429) {
+  if (
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
+    error.status === 429
+  ) {
     return 'rate_limit'
   }
 
   // Server overload (529)
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     (error.status === 529 ||
-      error.message?.includes('"type":"overloaded_error"'))
+      (error instanceof APIError &&
+        error.message?.includes('"type":"overloaded_error"')))
   ) {
     return 'server_overload'
   }
@@ -1034,7 +1039,7 @@ export function classifyAPIError(error: unknown): string {
 
   // Image size errors
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.includes('image exceeds') &&
     error.message.includes('maximum')
@@ -1044,7 +1049,7 @@ export function classifyAPIError(error: unknown): string {
 
   // Many-image dimension errors
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.includes('image dimensions exceed') &&
     error.message.includes('many-image')
@@ -1054,7 +1059,7 @@ export function classifyAPIError(error: unknown): string {
 
   // Tool use errors (400)
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.includes(
       '`tool_use` ids were found without `tool_result` blocks immediately after',
@@ -1064,7 +1069,7 @@ export function classifyAPIError(error: unknown): string {
   }
 
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.includes('unexpected `tool_use_id` found in `tool_result`')
   ) {
@@ -1072,7 +1077,7 @@ export function classifyAPIError(error: unknown): string {
   }
 
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.includes('`tool_use` ids must be unique')
   ) {
@@ -1081,7 +1086,7 @@ export function classifyAPIError(error: unknown): string {
 
   // Invalid model errors (400)
   if (
-    error instanceof APIError &&
+    (error instanceof APIError || error instanceof OpenAIShimError) &&
     error.status === 400 &&
     error.message.toLowerCase().includes('invalid model name')
   ) {
